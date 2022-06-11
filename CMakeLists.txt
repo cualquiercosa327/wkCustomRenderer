@@ -36,12 +36,17 @@ add_library(${PROJECT_NAME} SHARED
         src/BitmapImage.cpp src/BitmapImage.h
         src/W2App.cpp src/W2App.h
         src/Sprites.cpp src/Sprites.h
+        src/DrawingQueue.cpp src/DrawingQueue.h
+        src/Screen.cpp src/Screen.h
+        src/Renderer.cpp src/Renderer.h
+        src/Zoom.cpp src/Zoom.h
+        src/Keyboard.cpp src/Keyboard.h
         src/Utils.cpp src/Utils.h
         src/Debugf.h
         ${CMAKE_CURRENT_BINARY_DIR}/resource.rc
 )
-add_dependencies(${PROJECT_NAME} PolyHook_2)
+add_dependencies(${PROJECT_NAME} PolyHook_2 git)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set_property(TARGET ${PROJECT_NAME} hacklib-patternscanner git PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-target_link_libraries(${PROJECT_NAME} hacklib-patternscanner PolyHook_2 version git)
+target_link_libraries(${PROJECT_NAME} hacklib-patternscanner PolyHook_2 version git glew32s opengl32)

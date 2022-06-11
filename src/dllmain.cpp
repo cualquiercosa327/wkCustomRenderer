@@ -10,6 +10,11 @@
 #include "BitmapImage.h"
 #include "W2App.h"
 #include "Sprites.h"
+#include "DrawingQueue.h"
+#include "Screen.h"
+#include "Renderer.h"
+#include "Zoom.h"
+#include "Keyboard.h"
 #include "Debugf.h"
 #include "Hooks.h"
 #include <chrono>
@@ -21,6 +26,11 @@ void install() {
 	BitmapImage::install();
 	W2App::install();
 	Sprites::install();
+	DrawingQueue::install();
+	Screen::install();
+	Renderer::install();
+	Zoom::install();
+	Keyboard::install();
 	debugf("Hooks installed\n");
 }
 

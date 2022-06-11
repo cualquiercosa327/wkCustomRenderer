@@ -40,10 +40,6 @@ DWORD __stdcall W2App::hookConstructGameGlobal(DWORD ddgame) {
 	auto ret = origConstructGameGlobal(ddgame);
 	addrGameGlobal = *(DWORD*)(ddgame + 0x488);
 
-	for(auto & cb : constructGameGlobalCallbacks) {
-		cb(ddgame);
-	}
-
 	return ret;
 }
 
