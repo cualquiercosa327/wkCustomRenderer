@@ -12,8 +12,9 @@
 #include "Sprites.h"
 #include "DrawingQueue.h"
 #include "Screen.h"
-#include "Renderer.h"
+#include "Backend.h"
 #include "Zoom.h"
+#include "Drawing.h"
 #include "Keyboard.h"
 #include "Debugf.h"
 #include "Hooks.h"
@@ -28,8 +29,9 @@ void install() {
 	Sprites::install();
 	DrawingQueue::install();
 	Screen::install();
-	Renderer::install();
+	Backend::install();
 	Zoom::install();
+	Drawing::install();
 	Keyboard::install();
 	debugf("Hooks installed\n");
 }

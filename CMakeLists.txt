@@ -38,7 +38,8 @@ add_library(${PROJECT_NAME} SHARED
         src/Sprites.cpp src/Sprites.h
         src/DrawingQueue.cpp src/DrawingQueue.h
         src/Screen.cpp src/Screen.h
-        src/Renderer.cpp src/Renderer.h
+        src/Backend.cpp src/Backend.h
+        src/Drawing.cpp src/Drawing.h
         src/Zoom.cpp src/Zoom.h
         src/Keyboard.cpp src/Keyboard.h
         src/Utils.cpp src/Utils.h
