@@ -7,6 +7,10 @@
 typedef unsigned long DWORD;
 class Backend {
 public:
+	class CustomGL;
+	class CustomOperations;
+	class CustomBitbucket;
+
 	class CustomGL {
 	public:
 		// it would be cool to use virtual interface, but these functions utilize fastcall convention
@@ -26,9 +30,6 @@ public:
 		static DWORD * __fastcall vt13(CustomGL *This, DWORD *a2);
 		static int __fastcall vt14(CustomGL *This, int a2);
 
-		static inline std::array<DWORD, 15> vt_original;
-		static inline std::array<DWORD, 15> vt_hook;
-
 		DWORD vtable;
 		DWORD dword4;
 		DWORD dword8;
@@ -47,6 +48,12 @@ public:
 		DWORD dword3C;
 		DWORD dword40;
 		DWORD dword44;
+
+		static inline std::array<DWORD, 15> vt_original;
+		static inline std::array<DWORD, 15> vt_hook;
+
+		static const std::array<DWORD, 15> &getVtOriginal();
+		static const std::array<DWORD, 15> &getVtHook();
 	};
 
 	class CustomOperations {
@@ -73,13 +80,42 @@ public:
 		static DWORD* __fastcall vt19(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7);
 		static void* __fastcall vt20();
 		static int __fastcall vt21(int a1);
-		static DWORD* __fastcall vt22();
+		static CustomBitbucket* __fastcall vt22();
 		static DWORD* __fastcall vt23(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char a10);
 		static int* __fastcall vt24(int a1, int* a2, int a3, int a4);
 
 		static inline std::array<DWORD, 25> vt_original;
 		static inline std::array<DWORD, 25> vt_hook;
+		static const std::array<DWORD, 25> &getVtOriginal();
+		static const std::array<DWORD, 25> &getVtHook();
+	};
 
+
+	class CustomBitbucket {
+	public:
+		DWORD dword0;
+		DWORD dword4;
+		DWORD dword8;
+		DWORD dwordC;
+		DWORD dword10;
+
+		static CustomBitbucket *__fastcall vt0(CustomBitbucket *a1, int EDX, char a2);
+		static int __fastcall vt1(CustomBitbucket *a1, int a2, DWORD *a3, int a4);
+		static DWORD *__fastcall vt2(CustomBitbucket* a1, DWORD *a2, int a3);
+		static DWORD *__fastcall vt3(CustomBitbucket *a1, DWORD *a2, DWORD *a3, DWORD *a4);
+		static DWORD *__fastcall vt4(CustomBitbucket* a1, DWORD *a2, int a3);
+		static DWORD *__fastcall vt5(CustomBitbucket *a1, DWORD *a2, int a3, int a4, int a5);
+		static DWORD *__fastcall vt6(CustomBitbucket *a1, DWORD *a2);
+		static DWORD *__fastcall vt7(CustomBitbucket *a1, DWORD *a2, char a3, int a4);
+		static DWORD *__fastcall vt8(CustomBitbucket *a1, DWORD *a2, DWORD *a3, int a4);
+		static char vt9();
+		static DWORD *__fastcall vt10(CustomBitbucket *a1, DWORD *a2, int a3, int a4, size_t Size, int a6, int Val);
+		static DWORD *__fastcall vt11(CustomBitbucket *a1, int *a2, int a3, int a4, int a5, int a6, int a7, size_t Size, int a9, int a10);
+
+		static inline std::array<DWORD, 12> vt_original;
+		static inline std::array<DWORD, 12> vt_hook;
+		static const std::array<DWORD, 12> &getVtOriginal();
+		static const std::array<DWORD, 12> &getVtHook();
 	};
 
 

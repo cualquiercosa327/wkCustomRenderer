@@ -91,6 +91,26 @@ void Backend::install() {
 	*(DWORD**)(&hookOperations[2]) = (DWORD*)&CustomOperations::vt_hook;
 	_PatchAsm(addrWaMain + 0x2024, (unsigned char*)&hookOperations, sizeof(hookOperations));
 
+
+	DWORD * addrBitbucketVtable = *(DWORD**)(addrOperationsVtable[22] + 0x18);
+	for(int i = 0; i < CustomBitbucket::vt_original.size(); i++) {
+		CustomBitbucket::vt_original[i] = addrBitbucketVtable[i];
+	}
+	CustomBitbucket::vt_hook[0] = (DWORD)&CustomBitbucket::vt0;
+	CustomBitbucket::vt_hook[1] = (DWORD)&CustomBitbucket::vt1;
+	CustomBitbucket::vt_hook[2] = (DWORD)&CustomBitbucket::vt2;
+	CustomBitbucket::vt_hook[3] = (DWORD)&CustomBitbucket::vt3;
+	CustomBitbucket::vt_hook[4] = (DWORD)&CustomBitbucket::vt4;
+	CustomBitbucket::vt_hook[5] = (DWORD)&CustomBitbucket::vt5;
+	CustomBitbucket::vt_hook[6] = (DWORD)&CustomBitbucket::vt6;
+	CustomBitbucket::vt_hook[7] = (DWORD)&CustomBitbucket::vt7;
+	CustomBitbucket::vt_hook[8] = (DWORD)&CustomBitbucket::vt8;
+	CustomBitbucket::vt_hook[9] = (DWORD)&CustomBitbucket::vt9;
+	CustomBitbucket::vt_hook[10] = (DWORD)&CustomBitbucket::vt10;
+	CustomBitbucket::vt_hook[11] = (DWORD)&CustomBitbucket::vt11;
+	// vtable returned in CustomOperations::vt22
+
+
 	_HookDefault(ConstructOpenGlCPU);
 	_HookDefault(ConstructOpenGlShader);
 }
@@ -98,7 +118,7 @@ void Backend::install() {
 
 DWORD * __fastcall Backend::CustomGL::vt0(Backend::CustomGL * This, DWORD *a2, int a3, int a4) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*, int, int))(vt_original[0]))(This, a2, a3, a4);
-	debugf("a2: 0x%X a3: %d a4: %d, ret: 0x%X\n", a2, a3, a4, ret);
+//	debugf("a2: 0x%X a3: %d a4: %d, ret: 0x%X\n", a2, a3, a4, ret);
 
 	//	_DWORD *result; // eax
 	//
@@ -112,7 +132,7 @@ DWORD * __fastcall Backend::CustomGL::vt0(Backend::CustomGL * This, DWORD *a2, i
 
 DWORD * __fastcall Backend::CustomGL::vt1(Backend::CustomGL *This, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*))(vt_original[1]))(This, a2);
-	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
+//	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
 
 	//  _DWORD *v2; // edx
 	//  _DWORD *result; // eax
@@ -126,7 +146,7 @@ DWORD * __fastcall Backend::CustomGL::vt1(Backend::CustomGL *This, DWORD *a2) {
 
 DWORD * __fastcall Backend::CustomGL::vt2(Backend::CustomGL *This, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*))(vt_original[2]))(This, a2);
-	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
+//	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
 
 	//  int v3; // eax
 	//
@@ -149,7 +169,7 @@ DWORD * __fastcall Backend::CustomGL::vt2(Backend::CustomGL *This, DWORD *a2) {
 
 DWORD * __fastcall Backend::CustomGL::vt3(Backend::CustomGL *This, DWORD *a2, DWORD *a3) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*, DWORD*))(vt_original[3]))(This, a2, a3);
-	debugf("a2: 0x%X a3: 0x%X, ret: 0x%X\n", a2, a3, ret);
+//	debugf("a2: 0x%X a3: 0x%X, ret: 0x%X\n", a2, a3, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -164,7 +184,7 @@ DWORD * __fastcall Backend::CustomGL::vt3(Backend::CustomGL *This, DWORD *a2, DW
 
 DWORD * __fastcall Backend::CustomGL::vt4(Backend::CustomGL *This, DWORD *a2, int a3, void (__stdcall *a4)(DWORD, DWORD, int)) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*, int, void (__stdcall *)(DWORD, DWORD, int)))(vt_original[4]))(This, a2, a3, a4);
-	debugf("a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a2, a3, a4, ret);
+//	debugf("a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a2, a3, a4, ret);
 
 	//  DWORD v5; // esi
 	//  DEVMODEA DevMode; // [esp+Ch] [ebp-9Ch] BYREF
@@ -194,12 +214,12 @@ DWORD * __fastcall Backend::CustomGL::vt4(Backend::CustomGL *This, DWORD *a2, in
 }
 
 void __fastcall Backend::CustomGL::vt5(Backend::CustomGL *This) {
-	debugf("...\n");
+//	debugf("...\n");
 }
 
 int __fastcall Backend::CustomGL::vt6(Backend::CustomGL *This, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int, int, int))(vt_original[6]))(This, a2, a3, a4);
-	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
+//	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
 	// int v4; // edi
 	//  int result; // eax
 	//  int v8; // eax
@@ -288,7 +308,7 @@ int __fastcall Backend::CustomGL::vt6(Backend::CustomGL *This, int a2, int a3, i
 
 int * __fastcall Backend::CustomGL::vt7(Backend::CustomGL *This, int *a2, int a3) {
 	auto ret = ((int* (__fastcall *)(Backend::CustomGL*, int*, int))(vt_original[7]))(This, a2, a3);
-	debugf("a2: 0x%X a3: %d, ret: 0x%X\n", a2, a3, ret);
+//	debugf("a2: 0x%X a3: %d, ret: 0x%X\n", a2, a3, ret);
 
 	// sub_59EF80(a1, &a3, a3);
 	//  if ( a3 == dword_8AC8BC )
@@ -312,7 +332,7 @@ int * __fastcall Backend::CustomGL::vt7(Backend::CustomGL *This, int *a2, int a3
 
 DWORD * __fastcall Backend::CustomGL::vt8(Backend::CustomGL *This, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*))(vt_original[8]))(This, a2);
-	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
+//	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
 
 	//  _DWORD *v2; // edx
 	//  _DWORD *v3; // esi
@@ -331,7 +351,7 @@ DWORD * __fastcall Backend::CustomGL::vt8(Backend::CustomGL *This, DWORD *a2) {
 
 int __fastcall Backend::CustomGL::vt9(Backend::CustomGL *This, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int, int, int))(vt_original[3]))(This, a2, a3, a4);
-	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
+//	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
 
 	//  (*(void (__fastcall **)(int, int, int, int))(*(_DWORD *)a1 + 24))(a1, a2, a3, a4);
 	//  return a2;
@@ -340,7 +360,7 @@ int __fastcall Backend::CustomGL::vt9(Backend::CustomGL *This, int a2, int a3, i
 }
 int __fastcall Backend::CustomGL::vt10(Backend::CustomGL *This, int a2) {
 	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int))(vt_original[10]))(This, a2);
-	debugf("a2: %d, ret: %d\n", a2, ret);
+//	debugf("a2: %d, ret: %d\n", a2, ret);
 
 	//  (*(void (__fastcall **)(_DWORD *, int, _DWORD, _DWORD))(*a1 + 24))(a1, a2, a1[11], a1[12]);
 	//  return a2;
@@ -350,7 +370,7 @@ int __fastcall Backend::CustomGL::vt10(Backend::CustomGL *This, int a2) {
 
 DWORD * __fastcall Backend::CustomGL::vt11(Backend::CustomGL *This, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*))(vt_original[11]))(This, a2);
-	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
+//	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -462,7 +482,7 @@ DWORD * __fastcall Backend::CustomGL::vt13(Backend::CustomGL *This, DWORD *a2) {
 
 int __fastcall Backend::CustomGL::vt14(Backend::CustomGL *This, int a2) {
 	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int))(vt_original[14]))(This, a2);
-	debugf("a2: %d, ret: %d\n", a2, ret);
+//	debugf("a2: %d, ret: %d\n", a2, ret);
 
 	//  LPVOID *v2; // esi
 	//  int v5; // edi
@@ -485,9 +505,17 @@ int __fastcall Backend::CustomGL::vt14(Backend::CustomGL *This, int a2) {
 	return ret;
 }
 
+const std::array<DWORD, 15> &Backend::CustomGL::getVtOriginal() {
+	return vt_original;
+}
+
+const std::array<DWORD, 15> &Backend::CustomGL::getVtHook() {
+	return vt_hook;
+}
+
 int __fastcall Backend::CustomOperations::vt0(int a1, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(int, int, int, int))(vt_original[0]))(a1, a2, a3, a4);
-	debugf("a1: %d a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
+//	debugf("a1: %d a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
 
 	//  (***(void (__fastcall ****)(_DWORD, int, int, int))(a1 + 24))(*(_DWORD *)(a1 + 24), a2, a3, a4);
 	//  return a2;
@@ -497,7 +525,7 @@ int __fastcall Backend::CustomOperations::vt0(int a1, int a2, int a3, int a4) {
 
 int __fastcall Backend::CustomOperations::vt1(int a1, int a2) {
 	auto ret = ((int (__fastcall *)(int, int))(vt_original[1]))(a1, a2);
-	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
+//	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
 
 	//  (*(void (__thiscall **)(_DWORD))(**(_DWORD **)(a1 + 24) + 4))(*(_DWORD *)(a1 + 24));
 	//  return a2;
@@ -507,7 +535,7 @@ int __fastcall Backend::CustomOperations::vt1(int a1, int a2) {
 
 int __fastcall Backend::CustomOperations::vt2(int a1, int a2) {
 	auto ret = ((int (__fastcall *)(int, int))(vt_original[2]))(a1, a2);
-	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
+//	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
 
 	//  (*(void (__thiscall **)(_DWORD))(**(_DWORD **)(a1 + 24) + 8))(*(_DWORD *)(a1 + 24));
 	//  return a2;
@@ -516,7 +544,7 @@ int __fastcall Backend::CustomOperations::vt2(int a1, int a2) {
 }
 DWORD* __fastcall Backend::CustomOperations::vt3(int a1, DWORD* a2, DWORD* a3) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, DWORD*))(vt_original[3]))(a1, a2, a3);
-	debugf("a1: %d a2: 0x%X a3: 0x%X, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: %d a2: 0x%X a3: 0x%X, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -531,7 +559,7 @@ DWORD* __fastcall Backend::CustomOperations::vt3(int a1, DWORD* a2, DWORD* a3) {
 
 int __fastcall Backend::CustomOperations::vt4(int a1, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(int, int, int, int))(vt_original[4]))(a1, a2, a3, a4);
-	debugf("a1: %d a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
+//	debugf("a1: %d a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
 
 	//  (*(void (__fastcall **)(_DWORD, int, int, int))(**(_DWORD **)(a1 + 24) + 16))(*(_DWORD *)(a1 + 24), a2, a3, a4);
 	//  return a2;
@@ -541,7 +569,7 @@ int __fastcall Backend::CustomOperations::vt4(int a1, int a2, int a3, int a4) {
 
 int __fastcall Backend::CustomOperations::vt5(DWORD** a1) {
 	auto ret = ((int (__fastcall *)(DWORD**))(vt_original[5]))(a1);
-	debugf("a1: 0x%X, ret: %d\n", a1, ret);
+//	debugf("a1: 0x%X, ret: %d\n", a1, ret);
 
 	//  return (*(int (__thiscall **)(_DWORD *))(*this[6] + 20))(this[6]);
 
@@ -550,7 +578,7 @@ int __fastcall Backend::CustomOperations::vt5(DWORD** a1) {
 
 int __fastcall Backend::CustomOperations::vt6(int* a1, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(int*, int, int, int))(vt_original[6]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
 
 	//  void *v6; // eax
 	//  int v7; // edx
@@ -574,7 +602,7 @@ int __fastcall Backend::CustomOperations::vt6(int* a1, int a2, int a3, int a4) {
 
 DWORD* __fastcall Backend::CustomOperations::vt7(int a1, DWORD * a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int))(vt_original[7]))(a1, a2, a3);
-	debugf("a1: %d a2: 0x%X a3: %d, ret: %d\n", a1, a2, a3, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d, ret: %d\n", a1, a2, a3, ret);
 
 	//  (*(void (__fastcall **)(_DWORD, _DWORD *, int))(**(_DWORD **)(a1 + 24) + 28))(*(_DWORD *)(a1 + 24), a2, a3);
 	//  if ( *a2 == dword_8ACCD4 )
@@ -591,7 +619,7 @@ DWORD* __fastcall Backend::CustomOperations::vt7(int a1, DWORD * a2, int a3) {
 
 int __fastcall Backend::CustomOperations::vt8(int a1, int a2) {
 	auto ret = ((int (__fastcall *)(int, int))(vt_original[8]))(a1, a2);
-	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
+//	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
 
 	//  (*(void (__thiscall **)(_DWORD))(**(_DWORD **)(a1 + 24) + 32))(*(_DWORD *)(a1 + 24));
 	//  return a2;
@@ -601,7 +629,7 @@ int __fastcall Backend::CustomOperations::vt8(int a1, int a2) {
 
 int __fastcall Backend::CustomOperations::vt9(int *a1, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(int*, int, int, int))(vt_original[9]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: %d a3: %d a4: %d, ret: %d\n", a1, a2, a3, a4, ret);
 
 	//  void *v6; // eax
 	//  int v7; // edx
@@ -626,7 +654,7 @@ int __fastcall Backend::CustomOperations::vt9(int *a1, int a2, int a3, int a4) {
 
 int __fastcall Backend::CustomOperations::vt10(int a1, int a2) {
 	auto ret = ((int (__fastcall *)(int, int))(vt_original[10]))(a1, a2);
-	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
+//	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
 
 	//  (*(void (__thiscall **)(_DWORD))(**(_DWORD **)(a1 + 24) + 40))(*(_DWORD *)(a1 + 24));
 	//  return a2;
@@ -636,7 +664,7 @@ int __fastcall Backend::CustomOperations::vt10(int a1, int a2) {
 
 int __fastcall Backend::CustomOperations::vt11(int a1, int a2) {
 	auto ret = ((int (__fastcall *)(int, int))(vt_original[11]))(a1, a2);
-	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
+//	debugf("a1: %d a2: %d, ret: %d\n", a1, a2, ret);
 
 	//  (*(void (__thiscall **)(_DWORD))(**(_DWORD **)(a1 + 24) + 44))(*(_DWORD *)(a1 + 24));
 	//  return a2;
@@ -646,7 +674,7 @@ int __fastcall Backend::CustomOperations::vt11(int a1, int a2) {
 
 DWORD* __fastcall Backend::CustomOperations::vt12(int a1, DWORD* a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int))(vt_original[12]))(a1, a2, a3);
-	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//  _DWORD *result; // eax
 	//  _DWORD *v4; // ecx
@@ -664,7 +692,7 @@ DWORD* __fastcall Backend::CustomOperations::vt12(int a1, DWORD* a2, int a3) {
 
 DWORD* __fastcall Backend::CustomOperations::vt13(int a1, DWORD* a2) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*))(vt_original[13]))(a1, a2);
-	debugf("a1: %d a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
+//	debugf("a1: %d a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
 
 	//  int v5; // [esp+8h] [ebp-4h] BYREF
 	//
@@ -680,7 +708,7 @@ DWORD* __fastcall Backend::CustomOperations::vt13(int a1, DWORD* a2) {
 
 int __fastcall Backend::CustomOperations::vt14() {
 	auto ret = ((int (__fastcall *)())(vt_original[14]))();
-	debugf("ret: %d\n", ret);
+//	debugf("ret: %d\n", ret);
 
 	//  return 0;
 
@@ -689,7 +717,7 @@ int __fastcall Backend::CustomOperations::vt14() {
 
 DWORD* __fastcall Backend::CustomOperations::vt15(int a1, DWORD* a2, DWORD* a3, DWORD* a4) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, DWORD*, DWORD*))(vt_original[15]))(a1, a2, a3, a4);
-	debugf("a1: %d a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: %d a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -704,7 +732,7 @@ DWORD* __fastcall Backend::CustomOperations::vt15(int a1, DWORD* a2, DWORD* a3, 
 
 DWORD* __fastcall Backend::CustomOperations::vt16(int a1, DWORD* a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int))(vt_original[16]))(a1, a2, a3);
-	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -717,7 +745,7 @@ DWORD* __fastcall Backend::CustomOperations::vt16(int a1, DWORD* a2, int a3) {
 
 DWORD* __fastcall Backend::CustomOperations::vt17(int a1, DWORD* a2, DWORD* a3, DWORD* a4) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, DWORD*, DWORD*))(vt_original[17]))(a1, a2, a3, a4);
-	debugf("a1: %d a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: %d a2: 0x%X a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -732,7 +760,7 @@ DWORD* __fastcall Backend::CustomOperations::vt17(int a1, DWORD* a2, DWORD* a3, 
 
 DWORD* __fastcall Backend::CustomOperations::vt18(int a1, DWORD* a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int))(vt_original[18]))(a1, a2, a3);
-	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//  _DWORD *result; // eax
 	//
@@ -745,7 +773,7 @@ DWORD* __fastcall Backend::CustomOperations::vt18(int a1, DWORD* a2, int a3) {
 
 DWORD* __fastcall Backend::CustomOperations::vt19(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int, int, int, int, int))(vt_original[19]))(a1, a2, a3, a4, a5, a6, a7);
-	debugf("a1: %d a2: 0x%X a3: %d a4: %d, a5: %d a6: %d a7: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d a4: %d, a5: %d a6: %d a7: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, ret);
 
 	//  int v7; // ebx
 	//  void (__fastcall *v8)(int, _DWORD *, int *, int *); // eax
@@ -794,7 +822,7 @@ DWORD* __fastcall Backend::CustomOperations::vt19(int a1, DWORD* a2, int a3, int
 
 void* __fastcall Backend::CustomOperations::vt20() {
 	auto ret = ((void* (__fastcall *)())(vt_original[20]))();
-	debugf("ret: 0x%X\n", ret);
+//	debugf("ret: 0x%X\n", ret);
 
 	// void *result; // eax
 	//
@@ -811,16 +839,27 @@ void* __fastcall Backend::CustomOperations::vt20() {
 
 int __fastcall Backend::CustomOperations::vt21(int a1) {
 	auto ret = ((int (__fastcall *)(int))(vt_original[21]))(a1);
-	debugf("a1: %d, ret: %d\n", a1, ret);
+//	debugf("a1: %d, ret: %d\n", a1, ret);
 
 	//  return (*(int (__thiscall **)(void *))(*(_DWORD *)this + 80))(this);
 
 	return ret;
 }
 
-DWORD* __fastcall Backend::CustomOperations::vt22() {
-	auto ret = ((DWORD* (__fastcall *)())(vt_original[22]))();
-	debugf("ret: 0x%X\n", ret);
+Backend::CustomBitbucket* __fastcall Backend::CustomOperations::vt22() {
+	CustomBitbucket *bucket = (CustomBitbucket*)WaLibc::waMalloc(sizeof(CustomBitbucket));
+	if(!bucket) return 0;
+
+	bucket->dword0 = (DWORD)&CustomBitbucket::vt_hook;
+	bucket->dword4 = 0;
+	bucket->dword8 = 0;
+	bucket->dwordC = 0;
+	bucket->dword10 = 0;
+	return bucket;
+
+	//auto ret = ((DWORD* (__fastcall *)())(vt_original[22]))();
+//	debugf("ret: 0x%X\n", ret);
+	// return ret;
 
 	//  _DWORD *result; // eax
 	//
@@ -833,13 +872,14 @@ DWORD* __fastcall Backend::CustomOperations::vt22() {
 	//  result[3] = 0;
 	//  *((_BYTE *)result + 16) = 0;
 	//  return result;
-
-	return ret;
 }
 
 DWORD* __fastcall Backend::CustomOperations::vt23(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char a10) {
+//	*a2 = 0x8ACCD4;
+//	return a2;
+//	DWORD * ret;
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int, int, int, int, int, int, int, char))(vt_original[23]))(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-	debugf("a1: %d a2: 0x%X a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
 
 	//  int v12; // eax
 	//  int v13; // esi
@@ -999,7 +1039,7 @@ DWORD* __fastcall Backend::CustomOperations::vt23(int a1, DWORD* a2, int a3, int
 
 int* __fastcall Backend::CustomOperations::vt24(int a1, int* a2, int a3, int a4) {
 	auto ret = ((int* (__fastcall *)(int, int*, int, int))(vt_original[24]))(a1, a2, a3, a4);
-	debugf("a1: %d a2: 0x%X a3: %d a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: %d a2: 0x%X a3: %d a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//  int v4; // eax
 	//  int v5; // ebx
@@ -1076,6 +1116,481 @@ int* __fastcall Backend::CustomOperations::vt24(int a1, int* a2, int a3, int a4)
 	//    sub_5A0E90(&v17);
 	//  }
 	//  return v6;
+
+	return ret;
+}
+
+const std::array<DWORD, 25> &Backend::CustomOperations::getVtOriginal() {
+	return vt_original;
+}
+
+const std::array<DWORD, 25> &Backend::CustomOperations::getVtHook() {
+	return vt_hook;
+}
+
+Backend::CustomBitbucket *Backend::CustomBitbucket::vt0(Backend::CustomBitbucket *a1, int EDX, char a2) {
+	auto ret = ((CustomBitbucket* (__fastcall *)(CustomBitbucket*, int, char))(vt_original[0]))(a1, EDX, a2);
+	debugf("a1: 0x%X a2: %d, ret: 0x%X\n", a1, a2, ret);
+
+	//  void *dwordC; // [esp-4h] [ebp-8h]
+	//
+	//  dwordC = (void *)Block->dwordC;
+	//  Block->dword0 = &bitbucket_off_677570;
+	//  j__free(dwordC);
+	//  Block->dwordC = 0;
+	//  Block->dword4 = 0;
+	//  Block->dword8 = 0;
+	//  Block->dword0 = &off_676A5C;
+	//  if ( (a2 & 1) != 0 )
+	//    j__free(Block);
+	//  return Block;
+
+	return ret;
+}
+
+int Backend::CustomBitbucket::vt1(Backend::CustomBitbucket *a1, int a2, DWORD *a3, int a4) {
+	auto ret = ((int (__fastcall *)(CustomBitbucket*, int, DWORD*, int))(vt_original[1]))(a1, a2, a3, a4);
+	debugf("a1: 0x%X a2: %d, a3: 0x%X a4: %d ret: %d\n", a1, a2, a3, a4, ret);
+
+	//   (*(void (__fastcall **)(BitBucket *, int, int *, int))(a1->dword0 + 12))(a1, a2, &a4, a4);
+	//  if ( a3 )
+	//    *a3 = a4;
+	//  return a2;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt2(CustomBitbucket* a1, DWORD *a2, int a3) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int))(vt_original[2]))(a1, a2, a3);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+
+	//   _DWORD *result; // eax
+	//
+	//  result = a2;
+	//  *a2 = dword_8ACCD4;
+	//  return result;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt3(Backend::CustomBitbucket *a1, DWORD *a2, DWORD *a3, DWORD *a4) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, DWORD*, DWORD*))(vt_original[3]))(a1, a2, a3, a4);
+	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
+
+	//   _DWORD *result; // eax
+	//  _DWORD *v5; // ecx
+	//  int v6; // edx
+	//
+	//  result = a2;
+	//  if ( a4 )
+	//    *a4 = a1->dword4;
+	//  if ( a3 )
+	//    *a3 = a1->dwordC;
+	//  if ( a1->dwordC )
+	//  {
+	//    *a2 = dword_8ACCD4;
+	//  }
+	//  else
+	//  {
+	//    v5 = (_DWORD *)((char *)&unk_8ACE98 + 12 * (dword_8ACE8C & 0xF));
+	//    v6 = dword_8ACE8C + 1;
+	//    *result = v5;
+	//    dword_8ACE8C = v6;
+	//    *v5 = 2090;
+	//    v5[1] = 0;
+	//    v5[2] = 0;
+	//  }
+	//  return result;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt4(Backend::CustomBitbucket* a1, DWORD *a2, int a3) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int))(vt_original[4]))(a1, a2, a3);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+
+	//   _DWORD *result; // eax
+	//
+	//  result = a2;
+	//  *a2 = dword_8ACCD4;
+	//  return result;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt5(Backend::CustomBitbucket *a1, DWORD *a2, int a3, int a4, int a5) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int, int, int))(vt_original[5]))(a1, a2, a3, a4, a5);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, ret);
+
+	//   char v8[4]; // [esp+10h] [ebp-4h] BYREF
+	//
+	//  (*(void (__fastcall **)(BitBucket *, char *))(a1->dword0 + 24))(a1, v8);
+	//  a1->dwordC = operator new(a4 * a3);
+	//  a1->dword4 = a3;
+	//  a1->dword8 = a4;
+	//  *a2 = dword_8ACCD4;
+	//  return a2;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt6(Backend::CustomBitbucket *a1, DWORD *a2) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*))(vt_original[6]))(a1, a2);
+	debugf("a1: 0x%X a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
+
+	//   j__free((void *)a1->dwordC);
+	//  a1->dwordC = 0;
+	//  a1->dword4 = 0;
+	//  a1->dword8 = 0;
+	//  *a2 = dword_8ACCD4;
+	//  return a2;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt7(Backend::CustomBitbucket *a1, DWORD *a2, char a3, int a4) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, char, int))(vt_original[7]))(a1, a2, a3, a4);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
+
+	//   _DWORD *result; // eax
+	//
+	//  result = a2;
+	//  LOBYTE(a1->dword10) = a3;
+	//  *a2 = dword_8ACCD4;
+	//  return result;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt8(Backend::CustomBitbucket *a1, DWORD *a2, DWORD *a3, int a4) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, DWORD*, int))(vt_original[8]))(a1, a2, a3, a4);
+	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
+
+	//   _DWORD *result; // eax
+	//
+	//  result = a2;
+	//  *a3 = LOBYTE(a1->dword10);
+	//  *a2 = dword_8ACCD4;
+	//  return result;
+
+	return ret;
+}
+
+char Backend::CustomBitbucket::vt9() {
+	debugf("...\n");
+	return 0;
+}
+
+DWORD *Backend::CustomBitbucket::vt10(Backend::CustomBitbucket *a1, DWORD *a2, int a3, int a4, size_t a5, int a6, int a7) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int, int, size_t, int, int))(vt_original[10]))(a1, a2, a3, a4, a5, a6, a7);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d a7: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, ret);
+
+	//  int v10; // eax
+	//  signed int v11; // edi
+	//  int v12; // edx
+	//  int v13; // ecx
+	//  int dword4; // esi
+	//  int dword8; // eax
+	//  char *v16; // esi
+	//  int v17; // ebx
+	//  _DWORD *v18; // esi
+	//  int v19; // eax
+	//  char *v20; // edx
+	//  bool v21; // zf
+	//  _DWORD *v22; // [esp+10h] [ebp-28h] BYREF
+	//  char v23; // [esp+14h] [ebp-24h] BYREF
+	//  int v24; // [esp+18h] [ebp-20h] BYREF
+	//  int v25; // [esp+1Ch] [ebp-1Ch]
+	//  int v26; // [esp+20h] [ebp-18h]
+	//  int v27; // [esp+24h] [ebp-14h]
+	//  int v28; // [esp+34h] [ebp-4h]
+	//
+	//  v22 = a2;
+	//  sub_5A0EB0((int)a1, &v24);
+	//  if ( !v27 )
+	//  {
+	//    v10 = a3;
+	//    v11 = Size;
+	//    if ( a3 < 0 )
+	//    {
+	//      v11 = a3 + Size;
+	//      v10 = 0;
+	//      a3 = 0;
+	//    }
+	//    v12 = a4;
+	//    v13 = a6;
+	//    if ( a4 < 0 )
+	//    {
+	//      v13 = a4 + a6;
+	//      v12 = 0;
+	//    }
+	//    dword4 = a1->dword4;
+	//    if ( v11 + v10 > dword4 )
+	//      v11 = dword4 - a3;
+	//    dword8 = a1->dword8;
+	//    if ( v12 + v13 > dword8 )
+	//      v13 = dword8 - v12;
+	//    if ( v11 <= 0 || v13 <= 0 )
+	//    {
+	//      v18 = v22;
+	//      v28 = -1;
+	//      v19 = v25;
+	//      v21 = v25 == 0;
+	//      *v22 = dword_8AC8C4;
+	//      if ( v21 )
+	//        return v18;
+	//      v20 = (char *)&v22;
+	//    }
+	//    else
+	//    {
+	//      if ( a3 || v11 != dword4 )
+	//      {
+	//        v16 = (char *)(v25 + v12 * v26);
+	//        v17 = v13;
+	//        do
+	//        {
+	//          memset(v16, Val, v11);
+	//          v16 += v26;
+	//          --v17;
+	//        }
+	//        while ( v17 );
+	//      }
+	//      else
+	//      {
+	//        memset((void *)(v25 + v12 * v26), Val, v13 * v26);
+	//      }
+	//      v18 = v22;
+	//      *v22 = dword_8AC8C4;
+	//      v28 = -1;
+	//      v19 = v25;
+	//      if ( !v25 )
+	//        return v18;
+	//      v20 = &v23;
+	//    }
+	//    (*(void (__fastcall **)(int, char *, int))(*(_DWORD *)v24 + 16))(v24, v20, v19);
+	//    return v18;
+	//  }
+	//  *a2 = v27;
+	//  v28 = -1;
+	//  if ( v25 )
+	//    (*(void (__fastcall **)(int, _DWORD **, int))(*(_DWORD *)v24 + 16))(v24, &v22, v25);
+	//  return a2;
+
+	return ret;
+}
+
+DWORD *Backend::CustomBitbucket::vt11(Backend::CustomBitbucket *a1, int *a2, int a3, int a4, int a5, int a6, int a7, size_t a8, int a9, int a10) {
+	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, int*, int a3, int a4, int, int, int, size_t, int, int))(vt_original[11]))(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
+
+	//  int v12; // edx
+	//  signed int v13; // ebx
+	//  int v14; // esi
+	//  int v15; // edi
+	//  int dword4; // eax
+	//  int dword8; // eax
+	//  int v18; // eax
+	//  int v19; // eax
+	//  char *v20; // edi
+	//  char *v21; // esi
+	//  int v22; // eax
+	//  int *v23; // esi
+	//  signed int v24; // ecx
+	//  char *v25; // eax
+	//  bool v26; // zf
+	//  int v27; // eax
+	//  int v28; // eax
+	//  int *v29; // edx
+	//  int v30; // eax
+	//  char *v33; // [esp+18h] [ebp-50h]
+	//  int v34; // [esp+18h] [ebp-50h]
+	//  int v35; // [esp+1Ch] [ebp-4Ch] BYREF
+	//  int v36; // [esp+20h] [ebp-48h]
+	//  int v37; // [esp+24h] [ebp-44h]
+	//  int v38; // [esp+28h] [ebp-40h] BYREF
+	//  int v39; // [esp+2Ch] [ebp-3Ch] BYREF
+	//  int v40; // [esp+30h] [ebp-38h] BYREF
+	//  int v41; // [esp+34h] [ebp-34h] BYREF
+	//  int v42; // [esp+38h] [ebp-30h] BYREF
+	//  int v43; // [esp+3Ch] [ebp-2Ch]
+	//  int v44; // [esp+40h] [ebp-28h]
+	//  int v45; // [esp+44h] [ebp-24h]
+	//  int v46; // [esp+48h] [ebp-20h] BYREF
+	//  int v47; // [esp+4Ch] [ebp-1Ch]
+	//  int v48; // [esp+50h] [ebp-18h]
+	//  int v49; // [esp+54h] [ebp-14h]
+	//  int v50; // [esp+64h] [ebp-4h]
+	//
+	//  sub_5A0EB0((int)a1, &v42);
+	//  v50 = 0;
+	//  if ( v45 )
+	//  {
+	//    *a2 = v45;
+	//    v50 = -1;
+	//    if ( v43 )
+	//      (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v42 + 16))(v42, &v41, v43);
+	//    return a2;
+	//  }
+	//  sub_5A0E20(a5, &v46);
+	//  LOBYTE(v50) = 1;
+	//  if ( !v49 )
+	//  {
+	//    v12 = a3;
+	//    v13 = Size;
+	//    if ( a3 < 0 )
+	//    {
+	//      a6 += a3;
+	//      v13 = a3 + Size;
+	//      Size += a3;
+	//      v12 = 0;
+	//    }
+	//    v14 = a4;
+	//    v15 = a7;
+	//    if ( a4 < 0 )
+	//    {
+	//      a9 += a4;
+	//      v15 = a4 + a7;
+	//      v14 = 0;
+	//    }
+	//    dword4 = a1->dword4;
+	//    if ( v12 + v13 > dword4 )
+	//    {
+	//      v13 = dword4 - v12;
+	//      Size = dword4 - v12;
+	//    }
+	//    dword8 = a1->dword8;
+	//    if ( v14 + a9 > dword8 )
+	//      a9 = dword8 - v14;
+	//    v18 = *(_DWORD *)(a5 + 4);
+	//    if ( v13 + a6 > v18 )
+	//    {
+	//      v13 = v18 - a6;
+	//      Size = v18 - a6;
+	//    }
+	//    v19 = *(_DWORD *)(a5 + 8);
+	//    if ( v15 + a9 > v19 )
+	//      a9 = v19 - v15;
+	//    if ( v13 <= 0 || a9 <= 0 )
+	//    {
+	//      v23 = a2;
+	//      LOBYTE(v50) = 0;
+	//      v30 = v47;
+	//      v26 = v47 == 0;
+	//      *a2 = dword_8AC8C4;
+	//      if ( !v26 )
+	//        (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v46 + 8))(v46, &v41, v30);
+	//      v50 = -1;
+	//      v28 = v43;
+	//      if ( !v43 )
+	//        return v23;
+	//      v29 = &v41;
+	//      goto LABEL_53;
+	//    }
+	//    v37 = v48;
+	//    v36 = v44;
+	//    v20 = (char *)(a6 + v47 + v15 * v48);
+	//    v21 = (char *)(v12 + v43 + v14 * v44);
+	//    v33 = v20;
+	//    v39 = a10 & 2;
+	//    if ( (a10 & 2) == 0 && (a10 & 4) == 0 )
+	//    {
+	//      v34 = a9;
+	//      do
+	//      {
+	//        memcpy_0(v21, v20, v13);
+	//        v21 += v36;
+	//        v20 += v37;
+	//        --v34;
+	//      }
+	//      while ( v34 );
+	//LABEL_45:
+	//      v23 = a2;
+	//      LOBYTE(v50) = 0;
+	//      v27 = v47;
+	//      v26 = v47 == 0;
+	//      *a2 = dword_8AC8C4;
+	//      if ( !v26 )
+	//        (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v46 + 8))(v46, &v41, v27);
+	//      v50 = -1;
+	//      v28 = v43;
+	//      if ( !v43 )
+	//        return v23;
+	//      v29 = &v39;
+	//LABEL_53:
+	//      (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v42 + 16))(v42, v29, v28);
+	//      return v23;
+	//    }
+	//    v38 = 8 * (a10 & 6);
+	//    (*(void (__fastcall **)(int, int *, int *, int))(*(_DWORD *)a5 + 32))(a5, &v35, &v40, v38);
+	//    v22 = v35;
+	//    if ( v35
+	//      || (v22 = *(_DWORD *)(*(int (__fastcall **)(BitBucket *, int *, int *, int))(a1->dword0 + 32))(
+	//                             a1,
+	//                             &v38,
+	//                             &v41,
+	//                             v38),
+	//          (v35 = v22) != 0) )
+	//    {
+	//      v23 = a2;
+	//      *a2 = v22;
+	//      LOBYTE(v50) = 0;
+	//      sub_5A0E90(&v46);
+	//      v50 = -1;
+	//      sub_5A0F20(&v42);
+	//      return v23;
+	//    }
+	//    v35 = a9;
+	//    while ( 1 )
+	//    {
+	//      v24 = 0;
+	//      v25 = v20;
+	//      if ( v39 )
+	//      {
+	//        if ( v13 > 0 )
+	//        {
+	//          do
+	//          {
+	//            if ( (unsigned __int8)*v25 != v40 )
+	//              v21[v24] = *v25;
+	//            v13 = Size;
+	//            ++v24;
+	//            ++v25;
+	//          }
+	//          while ( v24 < (int)Size );
+	//LABEL_43:
+	//          v20 = v33;
+	//        }
+	//      }
+	//      else if ( v13 > 0 )
+	//      {
+	//        do
+	//        {
+	//          if ( (unsigned __int8)*v25 != v41 )
+	//            v21[v24] = *v25;
+	//          v13 = Size;
+	//          ++v24;
+	//          ++v25;
+	//        }
+	//        while ( v24 < (int)Size );
+	//        goto LABEL_43;
+	//      }
+	//      v20 += v37;
+	//      v21 += v36;
+	//      v26 = v35-- == 1;
+	//      v33 = v20;
+	//      if ( v26 )
+	//        goto LABEL_45;
+	//    }
+	//  }
+	//  *a2 = v49;
+	//  LOBYTE(v50) = 0;
+	//  if ( v47 )
+	//    (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v46 + 8))(v46, &v41, v47);
+	//  v50 = -1;
+	//  if ( !v43 )
+	//    return a2;
+	//  (*(void (__fastcall **)(int, int *, int))(*(_DWORD *)v42 + 16))(v42, &v41, v43);
+	//  return a2;
 
 	return ret;
 }
