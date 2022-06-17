@@ -2,6 +2,8 @@
 #include "Hooks.h"
 #include "WaLibc.h"
 #include "Debugf.h"
+#include <GL/glew.h>
+#include <Windows.h>
 
 Backend::CustomGL *(__stdcall *origConstructOpenGlCPU)(int a1, int a2);
 Backend::CustomGL *__stdcall hookConstructOpenGlCPU(int a1, int a2) {
@@ -54,8 +56,8 @@ void Backend::install() {
 	CustomGL::vt_hook[9] = (DWORD)&CustomGL::vt9;
 	CustomGL::vt_hook[10] = (DWORD)&CustomGL::vt10;
 	CustomGL::vt_hook[11] = (DWORD)&CustomGL::vt11;
-	CustomGL::vt_hook[12] = (DWORD)&CustomGL::vt12;
-	CustomGL::vt_hook[13] = (DWORD)&CustomGL::vt13;
+	CustomGL::vt_hook[12] = (DWORD) &CustomGL::draw_framebuffer_as_quad_vt12;
+	CustomGL::vt_hook[13] = (DWORD) &CustomGL::swap_buffers_vt13;
 	CustomGL::vt_hook[14] = (DWORD)&CustomGL::vt14;
 
 	for(int i = 0; i < CustomOperations::vt_original.size(); i++) {
@@ -110,7 +112,9 @@ void Backend::install() {
 	CustomBitbucket::vt_hook[11] = (DWORD)&CustomBitbucket::vt11;
 	// vtable returned in CustomOperations::vt22
 
-
+	gl_dword8AC8BC = *(DWORD*)(addrOpenGLCpuVtable[0] + 0xB);
+	op_dword8ACCD4 = *(DWORD*)(addrOperationsVtable[3] + 0x19);
+	bitbucket_dword8AC8C4 = *(DWORD*)(addrBitbucketVtable[10] + 0x108);
 	_HookDefault(ConstructOpenGlCPU);
 	_HookDefault(ConstructOpenGlShader);
 }
@@ -381,9 +385,17 @@ DWORD * __fastcall Backend::CustomGL::vt11(Backend::CustomGL *This, DWORD *a2) {
 	return ret;
 }
 
-int * __fastcall Backend::CustomGL::vt12(Backend::CustomGL *This, int a2, unsigned char *a3) {
-	auto ret = ((int* (__fastcall *)(Backend::CustomGL*, int, unsigned char*))(vt_original[12]))(This, a2, a3);
-//	debugf("a2: %d a3: 0x%X, ret: 0x%X\n", a2, a3, ret);
+// called from operations_vt13 (0x005A26DA)
+int __fastcall Backend::CustomGL::draw_framebuffer_as_quad_vt12(Backend::CustomGL *This, int a2, unsigned char *a3) {
+
+	glEnable(GL_TEXTURE_2D);
+//	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int, unsigned char*))(vt_original[12]))(This, a2, a3);
+	glDisable(GL_TEXTURE_2D);
+	*(DWORD*)a2 = 0;
+	return a2;
+
+//	*(DWORD*)a2 = gl_dword8AC8BC;
+	//debugf("a2: %d a3: 0x%X, ret: 0x%X\n", a2, a3, ret);
 
 	//  int v5; // ecx
 	//  _DWORD *v6; // eax
@@ -462,11 +474,18 @@ int * __fastcall Backend::CustomGL::vt12(Backend::CustomGL *This, int a2, unsign
 	//    }
 	//  }
 
-	return ret;
+//	return ret;
 }
 
-DWORD * __fastcall Backend::CustomGL::vt13(Backend::CustomGL *This, DWORD *a2) {
+DWORD * __fastcall Backend::CustomGL::swap_buffers_vt13(Backend::CustomGL *This, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(Backend::CustomGL*, DWORD*))(vt_original[13]))(This, a2);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+//	SwapBuffers((HDC)This->hdc_dword18);
+//	*a2 = gl_dword8AC8BC;
+//	return a2;
+
+
 //	debugf("a2: 0x%X, ret: 0x%X\n", a2, ret);
 
 	//  sub_5A2100((_DWORD *)a1, *(_DWORD *)(a1 + 44), *(char **)(a1 + 48));
@@ -690,6 +709,7 @@ DWORD* __fastcall Backend::CustomOperations::vt12(int a1, DWORD* a2, int a3) {
 	return ret;
 }
 
+// called from 0x00403B9E
 DWORD* __fastcall Backend::CustomOperations::vt13(int a1, DWORD* a2) {
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*))(vt_original[13]))(a1, a2);
 //	debugf("a1: %d a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
@@ -875,7 +895,7 @@ Backend::CustomBitbucket* __fastcall Backend::CustomOperations::vt22() {
 }
 
 DWORD* __fastcall Backend::CustomOperations::vt23(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char a10) {
-//	*a2 = 0x8ACCD4;
+//	*a2 = op_dword8ACCD4;
 //	return a2;
 //	DWORD * ret;
 	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int, int, int, int, int, int, int, char))(vt_original[23]))(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
@@ -1130,7 +1150,7 @@ const std::array<DWORD, 25> &Backend::CustomOperations::getVtHook() {
 
 Backend::CustomBitbucket *Backend::CustomBitbucket::vt0(Backend::CustomBitbucket *a1, int EDX, char a2) {
 	auto ret = ((CustomBitbucket* (__fastcall *)(CustomBitbucket*, int, char))(vt_original[0]))(a1, EDX, a2);
-	debugf("a1: 0x%X a2: %d, ret: 0x%X\n", a1, a2, ret);
+//	debugf("a1: 0x%X a2: %d, ret: 0x%X\n", a1, a2, ret);
 
 	//  void *dwordC; // [esp-4h] [ebp-8h]
 	//
@@ -1150,7 +1170,7 @@ Backend::CustomBitbucket *Backend::CustomBitbucket::vt0(Backend::CustomBitbucket
 
 int Backend::CustomBitbucket::vt1(Backend::CustomBitbucket *a1, int a2, DWORD *a3, int a4) {
 	auto ret = ((int (__fastcall *)(CustomBitbucket*, int, DWORD*, int))(vt_original[1]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: %d, a3: 0x%X a4: %d ret: %d\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: %d, a3: 0x%X a4: %d ret: %d\n", a1, a2, a3, a4, ret);
 
 	//   (*(void (__fastcall **)(BitBucket *, int, int *, int))(a1->dword0 + 12))(a1, a2, &a4, a4);
 	//  if ( a3 )
@@ -1162,7 +1182,7 @@ int Backend::CustomBitbucket::vt1(Backend::CustomBitbucket *a1, int a2, DWORD *a
 
 DWORD *Backend::CustomBitbucket::vt2(CustomBitbucket* a1, DWORD *a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int))(vt_original[2]))(a1, a2, a3);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//   _DWORD *result; // eax
 	//
@@ -1175,7 +1195,7 @@ DWORD *Backend::CustomBitbucket::vt2(CustomBitbucket* a1, DWORD *a2, int a3) {
 
 DWORD *Backend::CustomBitbucket::vt3(Backend::CustomBitbucket *a1, DWORD *a2, DWORD *a3, DWORD *a4) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, DWORD*, DWORD*))(vt_original[3]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: 0x%X, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//   _DWORD *result; // eax
 	//  _DWORD *v5; // ecx
@@ -1207,7 +1227,7 @@ DWORD *Backend::CustomBitbucket::vt3(Backend::CustomBitbucket *a1, DWORD *a2, DW
 
 DWORD *Backend::CustomBitbucket::vt4(Backend::CustomBitbucket* a1, DWORD *a2, int a3) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int))(vt_original[4]))(a1, a2, a3);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d, ret: 0x%X\n", a1, a2, a3, ret);
 
 	//   _DWORD *result; // eax
 	//
@@ -1220,7 +1240,7 @@ DWORD *Backend::CustomBitbucket::vt4(Backend::CustomBitbucket* a1, DWORD *a2, in
 
 DWORD *Backend::CustomBitbucket::vt5(Backend::CustomBitbucket *a1, DWORD *a2, int a3, int a4, int a5) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int, int, int))(vt_original[5]))(a1, a2, a3, a4, a5);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, ret);
 
 	//   char v8[4]; // [esp+10h] [ebp-4h] BYREF
 	//
@@ -1236,7 +1256,7 @@ DWORD *Backend::CustomBitbucket::vt5(Backend::CustomBitbucket *a1, DWORD *a2, in
 
 DWORD *Backend::CustomBitbucket::vt6(Backend::CustomBitbucket *a1, DWORD *a2) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*))(vt_original[6]))(a1, a2);
-	debugf("a1: 0x%X a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
+//	debugf("a1: 0x%X a2: 0x%X, ret: 0x%X\n", a1, a2, ret);
 
 	//   j__free((void *)a1->dwordC);
 	//  a1->dwordC = 0;
@@ -1250,7 +1270,7 @@ DWORD *Backend::CustomBitbucket::vt6(Backend::CustomBitbucket *a1, DWORD *a2) {
 
 DWORD *Backend::CustomBitbucket::vt7(Backend::CustomBitbucket *a1, DWORD *a2, char a3, int a4) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, char, int))(vt_original[7]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//   _DWORD *result; // eax
 	//
@@ -1264,7 +1284,7 @@ DWORD *Backend::CustomBitbucket::vt7(Backend::CustomBitbucket *a1, DWORD *a2, ch
 
 DWORD *Backend::CustomBitbucket::vt8(Backend::CustomBitbucket *a1, DWORD *a2, DWORD *a3, int a4) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, DWORD*, int))(vt_original[8]))(a1, a2, a3, a4);
-	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: 0x%X a4: %d, ret: 0x%X\n", a1, a2, a3, a4, ret);
 
 	//   _DWORD *result; // eax
 	//
@@ -1277,13 +1297,13 @@ DWORD *Backend::CustomBitbucket::vt8(Backend::CustomBitbucket *a1, DWORD *a2, DW
 }
 
 char Backend::CustomBitbucket::vt9() {
-	debugf("...\n");
+//	debugf("...\n");
 	return 0;
 }
 
 DWORD *Backend::CustomBitbucket::vt10(Backend::CustomBitbucket *a1, DWORD *a2, int a3, int a4, size_t a5, int a6, int a7) {
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, DWORD*, int, int, size_t, int, int))(vt_original[10]))(a1, a2, a3, a4, a5, a6, a7);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d a7: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d a7: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, ret);
 
 	//  int v10; // eax
 	//  signed int v11; // edi
@@ -1380,8 +1400,10 @@ DWORD *Backend::CustomBitbucket::vt10(Backend::CustomBitbucket *a1, DWORD *a2, i
 }
 
 DWORD *Backend::CustomBitbucket::vt11(Backend::CustomBitbucket *a1, int *a2, int a3, int a4, int a5, int a6, int a7, size_t a8, int a9, int a10) {
+//	*a2 = op_dword8ACCD4;
+//	return (DWORD*)a2;
 	auto ret = ((DWORD* (__fastcall *)(CustomBitbucket*, int*, int a3, int a4, int, int, int, size_t, int, int))(vt_original[11]))(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
-	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
+//	debugf("a1: 0x%X a2: 0x%X, a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
 
 	//  int v12; // edx
 	//  signed int v13; // ebx
@@ -1593,4 +1615,12 @@ DWORD *Backend::CustomBitbucket::vt11(Backend::CustomBitbucket *a1, int *a2, int
 	//  return a2;
 
 	return ret;
+}
+
+const std::array<DWORD, 12> &Backend::CustomBitbucket::getVtOriginal() {
+	return vt_original;
+}
+
+const std::array<DWORD, 12> &Backend::CustomBitbucket::getVtHook() {
+	return vt_hook;
 }

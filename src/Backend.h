@@ -26,8 +26,8 @@ public:
 		static int __fastcall vt9(CustomGL *This, int a2, int a3, int a4);
 		static int __fastcall vt10(CustomGL *This, int a2);
 		static DWORD * __fastcall vt11(CustomGL *This, DWORD *a2);
-		static int * __fastcall vt12(CustomGL *This, int a2, unsigned char *a3);
-		static DWORD * __fastcall vt13(CustomGL *This, DWORD *a2);
+		static int __fastcall draw_framebuffer_as_quad_vt12(CustomGL *This, int a2, unsigned char *a3);
+		static DWORD * __fastcall swap_buffers_vt13(CustomGL *This, DWORD *a2);
 		static int __fastcall vt14(CustomGL *This, int a2);
 
 		DWORD vtable;
@@ -36,18 +36,18 @@ public:
 		DWORD dwordC;
 		DWORD dword10;
 		DWORD dword14;
-		DWORD dword18;
+		DWORD hdc_dword18;
 		DWORD dword1C;
 		DWORD dword20;
 		DWORD dword24;
 		DWORD dword28;
-		DWORD dword2C;
-		DWORD dword30;
+		DWORD width_dword2C;
+		DWORD height_dword30;
 		DWORD dword34;
-		DWORD dword38;
-		DWORD dword3C;
+		DWORD texture_width_dword38;
+		DWORD texture_height_dword3C;
 		DWORD dword40;
-		DWORD dword44;
+		DWORD screen_buffer_dword44;
 
 		static inline std::array<DWORD, 15> vt_original;
 		static inline std::array<DWORD, 15> vt_hook;
@@ -122,6 +122,9 @@ public:
 private:
 	static inline DWORD * addrOpenGLCpuVtable;
 	static inline DWORD * addrOpenGLShaderVtable;
+	static inline DWORD gl_dword8AC8BC; // usef for return values in CustomGL, no clue
+	static inline DWORD op_dword8ACCD4; // used for return values in CustomOperations, no clue
+	static inline DWORD bitbucket_dword8AC8C4; // used for return values in CustomBitbucket, no clue
 public:
 	static void install();
 };
