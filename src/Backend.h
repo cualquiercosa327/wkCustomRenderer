@@ -20,7 +20,7 @@ public:
 		static DWORD * __fastcall vt3(CustomGL *This, DWORD *a2, DWORD *a3);
 		static DWORD * __fastcall vt4(CustomGL *This, DWORD *a2, int a3, void (__stdcall *a4)(DWORD, DWORD, int));
 		static void __fastcall vt5(CustomGL *This);
-		static int __fastcall vt6(CustomGL *This, int a2, int a3, int a4);
+		static int __fastcall setup_gl_vt6(CustomGL *This, int a2, int a3, int a4);
 		static int * __fastcall vt7(CustomGL *This, int *a2, int a3);
 		static DWORD * __fastcall vt8(CustomGL *This, DWORD *a2);
 		static int __fastcall vt9(CustomGL *This, int a2, int a3, int a4);
@@ -81,7 +81,7 @@ public:
 		static void* __fastcall vt20();
 		static int __fastcall vt21(int a1);
 		static CustomBitbucket* __fastcall vt22();
-		static DWORD* __fastcall vt23(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char a10);
+		static DWORD* __fastcall draw_bitbucket_vt23(int a1, DWORD *a2, Backend::CustomBitbucket *src, int posX, int posY, int offsetX, int offsetY, int width, int height, int flag);
 		static int* __fastcall vt24(int a1, int* a2, int a3, int a4);
 
 		static inline std::array<DWORD, 25> vt_original;

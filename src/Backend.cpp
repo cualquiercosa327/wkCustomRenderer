@@ -2,6 +2,7 @@
 #include "Hooks.h"
 #include "WaLibc.h"
 #include "Debugf.h"
+#include "Drawing.h"
 #include <GL/glew.h>
 #include <Windows.h>
 
@@ -50,7 +51,7 @@ void Backend::install() {
 	CustomGL::vt_hook[3] = (DWORD)&CustomGL::vt3;
 	CustomGL::vt_hook[4] = (DWORD)&CustomGL::vt4;
 	CustomGL::vt_hook[5] = (DWORD)&CustomGL::vt5;
-	CustomGL::vt_hook[6] = (DWORD)&CustomGL::vt6;
+	CustomGL::vt_hook[6] = (DWORD)&CustomGL::setup_gl_vt6;
 	CustomGL::vt_hook[7] = (DWORD)&CustomGL::vt7;
 	CustomGL::vt_hook[8] = (DWORD)&CustomGL::vt8;
 	CustomGL::vt_hook[9] = (DWORD)&CustomGL::vt9;
@@ -86,7 +87,7 @@ void Backend::install() {
 	CustomOperations::vt_hook[20] = (DWORD)&CustomOperations::vt20;
 	CustomOperations::vt_hook[21] = (DWORD)&CustomOperations::vt21;
 	CustomOperations::vt_hook[22] = (DWORD)&CustomOperations::vt22;
-	CustomOperations::vt_hook[23] = (DWORD)&CustomOperations::vt23;
+	CustomOperations::vt_hook[23] = (DWORD)&CustomOperations::draw_bitbucket_vt23;
 	CustomOperations::vt_hook[24] = (DWORD)&CustomOperations::vt24;
 
 	unsigned char hookOperations[] = {0xC7, 0x06, 0x00, 0x00, 0x00, 0x00}; // mov     dword ptr [esi], offset
@@ -221,8 +222,13 @@ void __fastcall Backend::CustomGL::vt5(Backend::CustomGL *This) {
 //	debugf("...\n");
 }
 
-int __fastcall Backend::CustomGL::vt6(Backend::CustomGL *This, int a2, int a3, int a4) {
+int __fastcall Backend::CustomGL::setup_gl_vt6(Backend::CustomGL *This, int a2, int a3, int a4) {
 	auto ret = ((int (__fastcall *)(Backend::CustomGL*, int, int, int))(vt_original[6]))(This, a2, a3, a4);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, This->width_dword2C, This->height_dword30, 0.0, 0.0, 1.0);
+
 //	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
 	// int v4; // edi
 	//  int result; // eax
@@ -894,11 +900,16 @@ Backend::CustomBitbucket* __fastcall Backend::CustomOperations::vt22() {
 	//  return result;
 }
 
-DWORD* __fastcall Backend::CustomOperations::vt23(int a1, DWORD* a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, char a10) {
+DWORD *Backend::CustomOperations::draw_bitbucket_vt23(int a1, DWORD *a2, Backend::CustomBitbucket *src, int posX, int posY, int offsetX, int offsetY, int width, int height, int flag) {
 //	*a2 = op_dword8ACCD4;
 //	return a2;
 //	DWORD * ret;
-	auto ret = ((DWORD* (__fastcall *)(int, DWORD*, int, int, int, int, int, int, int, char))(vt_original[23]))(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10);
+	//auto ret = ((DWORD* (__fastcall *)(int, DWORD*, CustomBitbucket*, int, int, int, int, int, int, int))(vt_original[23]))(a1, a2, src, posX, posY, offsetX, offsetY, width, height, flag);
+
+	Drawing::drawBitbucket(a1, a2, src, posX, posY, offsetX, offsetY, width, height, flag);
+	*a2 = op_dword8ACCD4;
+	return a2;
+
 //	debugf("a1: %d a2: 0x%X a3: %d a4: %d, a5: %d, a6: %d, a7: %d, a8: %d, a9: %d, a10: %d, ret: 0x%X\n", a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, ret);
 
 	//  int v12; // eax
@@ -1054,7 +1065,7 @@ DWORD* __fastcall Backend::CustomOperations::vt23(int a1, DWORD* a2, int a3, int
 	//  sub_5A0E90(&v31);
 	//  return v21;
 
-	return ret;
+//	return ret;
 }
 
 int* __fastcall Backend::CustomOperations::vt24(int a1, int* a2, int a3, int a4) {
