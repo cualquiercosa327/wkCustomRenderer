@@ -28,6 +28,7 @@ configure_file(resource.rc.in resource.rc)
 
 configure_file(cmake/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/gen/version.h)
 add_definitions(-DLIBRARY_EXPORTS)
+add_definitions(-DGLEW_STATIC)
 add_library(${PROJECT_NAME} SHARED
         src/dllmain.cpp
         src/Config.cpp src/Config.h
@@ -44,6 +45,7 @@ add_library(${PROJECT_NAME} SHARED
         src/Zoom.cpp src/Zoom.h
         src/Keyboard.cpp src/Keyboard.h
         src/Utils.cpp src/Utils.h
+        src/Shaders.cpp src/Shaders.h
         src/Debugf.h
         ${CMAKE_CURRENT_BINARY_DIR}/resource.rc
 )

@@ -15,6 +15,7 @@
 #include "Backend.h"
 #include "Zoom.h"
 #include "Drawing.h"
+#include "Shaders.h"
 #include "Keyboard.h"
 #include "Debugf.h"
 #include "Hooks.h"
@@ -32,6 +33,7 @@ void install() {
 	Backend::install();
 	Zoom::install();
 	Drawing::install();
+	Shaders::install();
 	Keyboard::install();
 	debugf("Hooks installed\n");
 }

@@ -2,6 +2,7 @@
 #include "Hooks.h"
 #include "WaLibc.h"
 #include "Debugf.h"
+#include "Shaders.h"
 #include "Drawing.h"
 #include <GL/glew.h>
 #include <Windows.h>
@@ -24,6 +25,65 @@ Backend::CustomGL *__stdcall hookConstructOpenGlShader(int a1, int a2) {
 	renderer->dword10 = a1;
 	renderer->dword24 = a2;
 	return renderer;
+}
+
+HGLRC __stdcall Backend::hookOpenGLCreateContext_cpp(HDC dc) {
+#define WGL_CONTEXT_DEBUG_BIT_ARB 0x00000001
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
+#define WGL_CONTEXT_FLAGS_ARB 0x2094
+#define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
+#define setAttrib(a, v) \
+{ \
+    assert(((size_t) index + 1) < sizeof(attribs) / sizeof(attribs[0])); \
+    attribs[index++] = a; \
+    attribs[index++] = v; \
+}
+
+	auto origcontext = wglGetCurrentContext();
+	auto temprc = wglCreateContext(dc);
+	wglMakeCurrent(dc, temprc);
+
+	HGLRC (__stdcall *imp_wglCreateContextAttribsARB)(HDC hDC, HGLRC hShareContext, const int *attribList);
+	imp_wglCreateContextAttribsARB = (HGLRC (__stdcall *)(HDC, HGLRC, const int *)) wglGetProcAddress("wglCreateContextAttribsARB");
+
+	int attribs[40];
+	memset(attribs, 0, sizeof(attribs));
+	int mask = 0, flags = 0, index = 0;
+
+	mask |= WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB;
+	if(Config::isDebugContext())
+		flags |= WGL_CONTEXT_DEBUG_BIT_ARB;
+	setAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+	setAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+	setAttrib(WGL_CONTEXT_FLAGS_ARB, flags);
+	setAttrib(WGL_CONTEXT_PROFILE_MASK_ARB, mask);
+
+	HGLRC share = nullptr;
+	auto ret = imp_wglCreateContextAttribsARB(dc, share, attribs);
+
+	wglMakeCurrent(dc, origcontext);
+	wglDeleteContext(temprc);
+
+	debugf("Created custom OpenGL context, result: %X\n", ret);
+	return ret;
+}
+
+DWORD addrCallOpenGLCreateContext_ret;
+DWORD addrWglCreateContext;
+void __declspec(naked) hookCallOpenGLCreateContext() {
+	_asm push esi
+	_asm push edi
+	_asm mov ecx,dword ptr ds:[esi+0x18]
+	_asm push ecx
+	_asm call Backend::hookOpenGLCreateContext_cpp
+	_asm pop edi
+	_asm pop esi
+	_asm mov dword ptr ds:[esi+0x1C],eax
+	_asm test eax,eax
+
+	_asm jmp addrCallOpenGLCreateContext_ret
 }
 
 void Backend::install() {
@@ -118,6 +178,11 @@ void Backend::install() {
 	bitbucket_dword8AC8C4 = *(DWORD*)(addrBitbucketVtable[10] + 0x108);
 	_HookDefault(ConstructOpenGlCPU);
 	_HookDefault(ConstructOpenGlShader);
+
+	DWORD addrOpenGLInit = (addrOpenGLCpuVtable[6] + 0x1B ) + *(DWORD*)(addrOpenGLCpuVtable[6] + 0x17);
+	DWORD addrOpenGLCreateContext = addrOpenGLInit + 0x27C;
+	addrCallOpenGLCreateContext_ret = addrOpenGLInit + 0x28B;
+	Hooks::hookAsm(addrOpenGLCreateContext, (DWORD) &hookCallOpenGLCreateContext);
 }
 
 
@@ -228,6 +293,8 @@ int __fastcall Backend::CustomGL::setup_gl_vt6(Backend::CustomGL *This, int a2, 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0.0, This->width_dword2C, This->height_dword30, 0.0, 0.0, 1.0);
+
+	Shaders::compileShaders();
 
 //	debugf("a2: %d a3: %d a4: %d, ret: %d\n", a2, a3, a4, ret);
 	// int v4; // edi

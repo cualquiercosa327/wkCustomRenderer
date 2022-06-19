@@ -3,6 +3,7 @@
 #define WKCUSTOMRENDERER_BACKEND_H
 
 #include <array>
+#include <Windows.h>
 
 typedef unsigned long DWORD;
 class Backend {
@@ -120,6 +121,8 @@ public:
 
 
 private:
+	static HGLRC __stdcall hookOpenGLCreateContext_cpp(HDC dc);
+
 	static inline DWORD * addrOpenGLCpuVtable;
 	static inline DWORD * addrOpenGLShaderVtable;
 	static inline DWORD gl_dword8AC8BC; // usef for return values in CustomGL, no clue

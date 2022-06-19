@@ -23,7 +23,7 @@ private:
 	static inline int moduleInitialized;
 	static inline bool debugSpriteImg = false;
 	static inline bool logToFile = false;
-
+	static inline bool debugContext = false;
 public:
 	static void readConfig();
 	static bool isModuleEnabled();
@@ -43,6 +43,8 @@ public:
 	static bool isMutexEnabled();
 	static bool isDebugSpriteImg();
 	static bool isLogToFile();
+
+	static bool isDebugContext();
 
 	static inline FILE * logfile;
 

@@ -20,6 +20,7 @@ void Config::readConfig() {
 
 	ignoreVersionCheck = GetPrivateProfileIntA("general", "IgnoreVersionCheck", 0, inipath.c_str());
 	devConsoleEnabled = GetPrivateProfileIntA("debug", "EnableDevConsole", 0, inipath.c_str());
+	debugContext = GetPrivateProfileIntA("debug", "GLDebugContext", 0, inipath.c_str());
 
 	debugSpriteImg = GetPrivateProfileIntA("debug", "DebugSpriteImgLoading", 0, inipath.c_str());
 	logToFile = GetPrivateProfileIntA("debug", "LogToFile", 0, inipath.c_str());
@@ -138,4 +139,8 @@ bool Config::isLogToFile() {
 
 bool Config::isMutexEnabled() {
 	return useMutex;
+}
+
+bool Config::isDebugContext() {
+	return debugContext;
 }
